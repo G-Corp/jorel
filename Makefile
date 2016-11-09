@@ -26,7 +26,7 @@ dev: compile
 	$(verbose) erl -pa _build/default/lib/*/ebin _build/default/lib/*/include
 
 VERSION = $(shell ./tag)
-release: compile
+release: dist
 ifeq ($(VERSION),ERROR)
 	$(verbose) echo "**> Can't find version!"
 else
@@ -38,7 +38,7 @@ else
 	$(RM_RF) jorel.wiki
 endif
 
-release-master: compile
+release-master: dist
 	$(version) echo "==> Release master"
 	git clone git@github.com:emedia-project/jorel.wiki.git
 	$(CP) _build/default/bin/jorel jorel.wiki/jorel.master
