@@ -1,6 +1,6 @@
 #!/usr/bin/env elixir
 # Convert an Elixir config.exs to an erlang sys.config
-# 
+#
 # Usage:  elixir_to_sys_config config.exs > sys.config
 #   First argument is the Elixir config.exs file
 #   Writes to stdout
@@ -29,7 +29,11 @@ defmodule ConfigConverter do
     from = Path.absname(path) |> Path.expand
     to = Path.absname(output) |> Path.expand
     Path.dirname(from) |> File.cd!
-    Mix.State.start_link()
+    try do
+      Mix.State.start_link()
+    rescue
+      Mix.State.start_link(nil)
+    end
     Mix.env(env)
     config = Mix.Config.read!(Path.basename(from))
     config = :io_lib.format('~p.~n', [config]) |> List.to_string

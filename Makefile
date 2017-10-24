@@ -31,7 +31,7 @@ ifeq ($(VERSION),ERROR)
 	$(verbose) echo "**> Can't find version!"
 else
 	$(verbose) echo "==> Release version $(VERSION)"
-	git clone git@github.com:emedia-project/jorel.wiki.git
+	git clone git@github.com:G-Corp/jorel.wiki.git
 	$(CP) _build/default/bin/jorel jorel.wiki/jorel
 	md5sum jorel.wiki/jorel | awk '{print $$1}' > jorel.wiki/jorel.md5
 	cd jorel.wiki; git add .; git commit -am "New release $(VERSION)"; git push origin master
@@ -40,7 +40,7 @@ endif
 
 release-master: dist
 	$(version) echo "==> Release master"
-	git clone git@github.com:emedia-project/jorel.wiki.git
+	git clone git@github.com:G-Corp/jorel.wiki.git
 	$(CP) _build/default/bin/jorel jorel.wiki/jorel.master
 	md5sum jorel.wiki/jorel.master | awk '{print $$1}' > jorel.wiki/jorel.master.md5
 	cd jorel.wiki; git add .; git commit -am "New master"; git push origin master
