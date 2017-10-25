@@ -273,7 +273,7 @@ make_boot_script(State, BootApps, BootFile) ->
     error ->
       ?HALT("!!! Can't generate boot script", []);
     {error, _, Error} ->
-      ?HALT("!!! Error while generating boot script with paths ~p: ~p", [Paths, Error]);
+      ?HALT("!!! Error while generating boot script ~s with paths ~p: ~p", [BootFile, Paths, Error]);
     {ok, _, []} ->
       ok;
     {ok, _, Warnings} ->
@@ -498,6 +498,11 @@ resolv_apps(State, [App|Rest], AllApps) ->
         Rest1,
         AllApps ++ AppAndDeps);
     true ->
+      case resolved(App) of
+        true -> ok;
+        false ->
+          ?DEBUG("= Ignore app ~s", [App])
+      end,
       resolv_apps(State, Rest, AllApps)
   end.
 

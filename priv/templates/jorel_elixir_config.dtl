@@ -29,10 +29,11 @@ defmodule ConfigConverter do
     from = Path.absname(path) |> Path.expand
     to = Path.absname(output) |> Path.expand
     Path.dirname(from) |> File.cd!
-    try do
-      Mix.State.start_link()
-    rescue
-      Mix.State.start_link(nil)
+    case Version.compare(System.version(), "1.5.0") do
+      :lt ->
+        Mix.State.start_link()
+      _ ->
+        Mix.State.start_link(nil)
     end
     Mix.env(env)
     config = Mix.Config.read!(Path.basename(from))

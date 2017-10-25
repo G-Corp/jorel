@@ -38,7 +38,7 @@ else
 	$(RM_RF) jorel.wiki
 endif
 
-release-master: dist
+release-master: compile
 	$(version) echo "==> Release master"
 	git clone git@github.com:G-Corp/jorel.wiki.git
 	$(CP) _build/default/bin/jorel jorel.wiki/jorel.master
