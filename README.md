@@ -8,7 +8,7 @@ __Version:__ 0.2.0
 
 __Authors:__ Gregoire Lejeune ([`gregoire.lejeune@gmail.com`](mailto:gregoire.lejeune@gmail.com)), Gregoire Lejeune ([`greg@g-corp.io`](mailto:greg@g-corp.io)).
 
-[![Build Status](https://travis-ci.org/emedia-project/jorel.svg?branch=master)](https://travis-ci.org/emedia-project/jorel)
+[![Build Status](https://travis-ci.org/G-Corp/jorel.svg?branch=master)](https://travis-ci.org/G-Corp/jorel)
 
 ![Jorel](https://raw.githubusercontent.com/emedia-project/jorel/master/Jor-El.jpeg)
 
