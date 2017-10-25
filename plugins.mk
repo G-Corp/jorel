@@ -10,7 +10,7 @@ else
 JOREL_EXE = jorel
 endif
 
-JOREL_URL ?= https://github.com/emedia-project/jorel/wiki/$(JOREL_EXE)
+JOREL_URL ?= https://github.com/G-Corp/jorel/wiki/$(JOREL_EXE)
 JOREL_MD5_URL = $(JOREL_URL).md5
 
 ifeq ($(JOREL_BUILD),true)
@@ -42,16 +42,16 @@ help::
 		" * v=REL_VERSION" \
 		" * c=CONFIG_FILE"
 
-jorel.release: 
+jorel.release:
 	$(verbose) make jorel.exec cmd=release
 
-jorel.appup: 
+jorel.appup:
 	$(verbose) make jorel.exec cmd=appup
 
-jorel.relup: 
+jorel.relup:
 	$(verbose) make jorel.exec cmd=relup
 
-jorel.archive: 
+jorel.archive:
 	$(verbose) make jorel.exec cmd=archive
 
 $(JOREL_CONFIG):
@@ -63,7 +63,7 @@ else
 jorel.exec: $(JOREL_CONFIG) jorel.run
 endif
 
-jorel.run: app $(JOREL) 
+jorel.run: app $(JOREL)
 ifndef cmd
 	$(error Usage: $(MAKE) jorel.exec cmd=CMD)
 endif
