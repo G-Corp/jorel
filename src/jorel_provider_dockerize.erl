@@ -112,49 +112,38 @@ build_in_docker(State, Data) ->
         {error, Reason} ->
           ?HALT("!!! Can't create ~s: ~p", [Dockerfile, Reason])
       end,
-      ?INFO("* Create build image (This can take a while... Go get yourself a cup of coffee.)", []),
-      _ = case sh:sh("docker build --file=~s -q -t ~s .", [Dockerfile, BuildImageName], [return_on_error]) of
-            {ok, _} ->
-              ok;
-            {error, _} ->
-              ?HALT("!!! Build image faild", [])
-          end,
-      ?INFO("* Release application", []),
-      _ = case sh:sh("docker run --name ~s ~s", [BuildContainerName, BuildImageName], [return_on_error]) of
-            {ok, _} ->
-              ok;
-            {error, _} ->
-              ?HALT("!!! Build release faild", [])
-          end,
-      ?INFO("* Copy ~s:~s to ~s", [BuildContainerName, DockerAppPath, BuildPath]),
-      _ = case sh:sh("docker cp ~s:~s ~s", [BuildContainerName, DockerAppPath, BuildPath], [return_on_error]) of
-            {ok, _} ->
-              ok;
-            {error, _} ->
-              ?HALT("!!! Build release faild", [])
-          end,
-      ?INFO("* Remove build container and image", []),
-      _ = case sh:sh("docker rm ~s", [BuildContainerName], [return_on_error]) of
-            {ok, _} ->
-              ok;
-            {error, _} ->
-              ?ERROR("! Faild to remove container ~s", [BuildContainerName])
-          end,
-      _ = case sh:sh("docker rmi ~s", [BuildImageName], [return_on_error]) of
-            {ok, _} ->
-              ok;
-            {error, _} ->
-              ?ERROR("! Faild to remove image ~s", [BuildImageName])
-          end,
+      execute(
+        "* Create build image (This can take a while... Go get yourself a cup of coffee.)",
+        {"docker build --file=~s -q -t ~s .", [Dockerfile, BuildImageName]},
+        "!!! Build image faild"
+       ),
+      execute(
+        "* Release application",
+        {"docker run --name ~s ~s", [BuildContainerName, BuildImageName]},
+        "!!! Build release faild"
+       ),
+      execute(
+        {"* Copy ~s:~s to ~s", [BuildContainerName, DockerAppPath, BuildPath]},
+        {"docker cp ~s:~s ~s", [BuildContainerName, DockerAppPath, BuildPath]},
+        "!!! Build release faild"
+       ),
+      execute(
+        "* Remove build container and image",
+        {"docker rm ~s", [BuildContainerName]},
+        {"! Faild to remove container ~s", [BuildContainerName]}
+       ),
+      execute(
+        "* Remove build image",
+        {"docker rmi ~s", [BuildImageName]},
+        {"! Faild to remove image ~s", [BuildImageName]}
+       ),
       if
         RemoveOrigin ->
-          ?INFO("* Remove origin image", []),
-          _ = case sh:sh("docker rmi ~s", [FromImageName], [return_on_error]) of
-                {ok, _} ->
-                  ok;
-                {error, _} ->
-                  ?ERROR("! Faild to remove image ~s", [FromImageName])
-              end;
+          execute(
+            "* Remove origin image",
+            {"docker rmi ~s", [FromImageName]},
+            {"! Faild to remove image ~s", [FromImageName]}
+           );
         true ->
           ok
       end,
@@ -275,3 +264,15 @@ is_list_of_list(L) when is_list(L) ->
   lists:all(fun is_list/1, L);
 is_list_of_list(_) ->
   false.
+
+execute({Message, MessageArgs}, Command, {ErrorMessage, ErrorMessageArgs}) ->
+  ?INFO(Message, MessageArgs),
+  case bucos:run(Command, [display_stdout]) of
+    {ok, _} -> ok;
+    _ -> ?HALT(ErrorMessage, ErrorMessageArgs)
+  end;
+execute(Message, Command, ErrorMessage) when is_list(Message) ->
+  execute({Message, []}, Command, ErrorMessage);
+execute(Message, Command, ErrorMessage) when is_list(ErrorMessage) ->
+  execute(Message, Command, {ErrorMessage, []}).
+

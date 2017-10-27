@@ -21,50 +21,50 @@ jorel_release_jorel_elixir_test_() ->
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, _},
-                         sh:sh("mix compile",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+                         bucos:run("mix compile",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, _},
-                         sh:sh(".jorel/jorel gen_config -v 0.0.1",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+                         bucos:run(".jorel/jorel gen_config -v 0.0.1",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, _},
-                         sh:sh(".jorel/jorel release",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+                         bucos:run(".jorel/jorel release",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
-            ?assertMatch({error, {1, "Node 'elixir_test@127.0.0.1' not responding to pings.\n"}},
-                         sh:sh("_jorel/elixir_test/bin/elixir_test ping",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+            ?assertMatch({error, 1, "Node 'elixir_test@127.0.0.1' not responding to pings.\n"},
+                         bucos:run("_jorel/elixir_test/bin/elixir_test ping",
+                                   [stdout_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, []},
-                         sh:sh("_jorel/elixir_test/bin/elixir_test start",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}])),
+                         bucos:run("_jorel/elixir_test/bin/elixir_test start",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}])),
             timer:sleep(1000)
         end}
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, "pong\n"},
-                         sh:sh("_jorel/elixir_test/bin/elixir_test ping",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+                         bucos:run("_jorel/elixir_test/bin/elixir_test ping",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
             ?assertMatch({ok, []},
-                         sh:sh("_jorel/elixir_test/bin/elixir_test stop",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+                         bucos:run("_jorel/elixir_test/bin/elixir_test stop",
+                                   [{cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
      , {timeout, 200,
         fun() ->
-            ?assertMatch({error, {1, "Node 'elixir_test@127.0.0.1' not responding to pings.\n"}},
-                         sh:sh("_jorel/elixir_test/bin/elixir_test ping",
-                               [return_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
+            ?assertMatch({error, 1, "Node 'elixir_test@127.0.0.1' not responding to pings.\n"},
+                         bucos:run("_jorel/elixir_test/bin/elixir_test ping",
+                                   [stdout_on_error, {cd, ".tests-ex/0.0.1/elixir_test"}]))
         end}
     ]}}.

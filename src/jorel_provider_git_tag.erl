@@ -242,7 +242,7 @@ last_tag() ->
               end, "", string:tokens(oksh("git tag"), [10, 13])).
 
 remote_tags(URL) ->
-  [ref(T) || T <- string:tokens(oksh("git ls-remote --tags " ++ URL), [10, 13])].
+  [ref(T) || T <- string:tokens(oksh({"git ls-remote --tags ~s", [URL]}), [10, 13])].
 ref(T) ->
   [_, R] = string:tokens(T, "\t "),
   ["refs", B|V] = string:tokens(R, "/"),
@@ -252,35 +252,27 @@ ref(T) ->
        end,
   {B1, string:join(V, "/")}.
 
-sh(Cmd, Opts) ->
-  sh:sh(Cmd, [{use_stdout, false}, return_on_error] ++ Opts).
-sh(Cmd, Args, Opts) ->
-  sh:sh(Cmd, Args, [{use_stdout, false}, return_on_error] ++ Opts).
-
 oksh(Cmd) ->
   oksh(Cmd, []).
 oksh(Cmd, Opts) ->
-  {ok, Rep} = sh(Cmd, Opts),
+  {ok, Rep} = bucos:run(Cmd, Opts),
   Rep.
-%oksh(Cmd, Args, Opts) ->
-%  {ok, Rep} = sh(Cmd, Args, Opts),
-%  Rep.
 
 uncommit() ->
   [F || [X, Y, _|F] <- string:tokens(oksh("git status --porcelain"), [10, 13]), X =:= $M orelse Y =:= $M].
 
 git_add(Files) ->
-  sh("git add ~s", [string:join(Files, " ")], []).
+  bucos:run({"git add ~s", [string:join(Files, " ")]}).
 
 git_commit(Comment) ->
-  case sh("git status -s -uno", []) of
+  case bucos:run("git status -s -uno") of
     {ok, D} when length(D) > 0 ->
-      sh("git commit -m \"~s\"", [Comment], []);
+      bucos:run({"git commit -m \"~s\"", [Comment]});
     Other -> Other
   end.
 
 git_tag(Version) ->
-  sh("git tag ~s", [Version], []).
+  bucos:run({"git tag ~s", [Version]}).
 
 app_files() ->
   AppPaths = filelib:wildcard("{src,apps,ebin,lib}/**/*.{app,app.src}"),
