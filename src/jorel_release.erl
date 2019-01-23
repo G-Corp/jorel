@@ -226,20 +226,8 @@ make_release(State) ->
           ?HALT("!!! Faild to rename release boot file: ~p", [Reason4])
       end,
       % Create start_clean.boot
-      _ = make_clean_release_file(State, RelDir, BootApps, "start_clean.rel"),
-      {StartCleanRel, StartCleanScript, StartCleanBoot} = make_boot_script(State, BootApps, "start_clean"),
-      StartCleanBootBin = filename:join([Outdir, "bin", "start_clean.boot"]),
-      R0 = file:delete(StartCleanRel),
-      ?DEBUG("= Remove ~s: ~p", [StartCleanRel, R0]),
-      R1 = file:delete(StartCleanScript),
-      ?DEBUG("= Remove ~s: ~p", [StartCleanScript, R1]),
-      R2 = case filelib:ensure_dir(StartCleanBootBin) of
-             ok ->
-               file:copy(StartCleanBoot, StartCleanBootBin);
-             Error ->
-               Error
-           end,
-      ?DEBUG("= Copy ~s to ~s: ~p", [StartCleanBoot, StartCleanBootBin, R2]),
+      install_boot_script(State, RelDir, BootApps, Outdir, "start_clean"),
+      install_boot_script(State, RelDir, BootApps, Outdir, "no_dot_erlang"),
       % Create release file
       RelFile = make_release_file(State, RelDir, AllApps, RelNameWithVsn ++ ".rel"),
       ?INFO("* Create RELEASES file", []),
@@ -251,6 +239,22 @@ make_release(State) ->
     {error, Reason} ->
       ?HALT("!!! Failed to create ~s: ~p", [RelDir, Reason])
   end.
+
+install_boot_script(State, RelDir, BootApps, Outdir, Name) ->
+      _ = make_clean_release_file(State, RelDir, BootApps, Name ++ ".rel"),
+      {StartCleanRel, StartCleanScript, StartCleanBoot} = make_boot_script(State, BootApps, Name),
+      StartCleanBootBin = filename:join([Outdir, "bin", Name ++ ".boot"]),
+      R0 = file:delete(StartCleanRel),
+      ?DEBUG("= Remove ~s: ~p", [StartCleanRel, R0]),
+      R1 = file:delete(StartCleanScript),
+      ?DEBUG("= Remove ~s: ~p", [StartCleanScript, R1]),
+      R2 = case filelib:ensure_dir(StartCleanBootBin) of
+             ok ->
+               file:copy(StartCleanBoot, StartCleanBootBin);
+             Error ->
+               Error
+           end,
+      ?DEBUG("= Copy ~s to ~s: ~p", [StartCleanBoot, StartCleanBootBin, R2]).
 
 make_boot_script(State, BootApps, BootFile) ->
   {outdir, Outdir} = jorel_config:get(State, outdir),
@@ -796,4 +800,3 @@ add_if_missing([Missing|Rest], List) ->
     false ->
       add_if_missing(Rest, [Missing|List])
   end.
-
