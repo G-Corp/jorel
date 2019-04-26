@@ -5,8 +5,6 @@
 @title Just anOther RELease assembler for Erlang/OTP Releases
 @doc
 
-[![Build Status](https://travis-ci.org/G-Corp/jorel.svg?branch=master)](https://travis-ci.org/G-Corp/jorel)
-
 <img src="https://raw.githubusercontent.com/emedia-project/jorel/master/Jor-El.jpeg" alt="Jorel"/>
 
 <h2>Documentation</h2>
